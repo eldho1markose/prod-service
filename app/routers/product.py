@@ -13,12 +13,12 @@ router= APIRouter(
 #CRUD 
 
 @router.get('/',response_model=List[schemas.ShowProduct])
-def all(db:Session =Depends(get_db), token: dict = Depends(verify_token)):
+def all(db:Session =Depends(get_db)):
     products=db.query(models.Product).all()
     return products
 
 @router.post('/',status_code=status.HTTP_201_CREATED)
-def create(request :schemas.Product , db : Session =Depends(get_db),token: dict = Depends(verify_token) ):
+def create(request :schemas.Product , db : Session =Depends(get_db) ):
     new_product= models.Product(name=request.name,price=request.price,stock=request.stock)
     db.add(new_product)
     db.commit()
@@ -26,7 +26,7 @@ def create(request :schemas.Product , db : Session =Depends(get_db),token: dict 
     return new_product
 
 @router.delete('/{id}',status_code=status.HTTP_204_NO_CONTENT)
-def destroy(id,db:Session=Depends(get_db),token: dict = Depends(verify_token)):
+def destroy(id,db:Session=Depends(get_db)):
     product =db.query(models.Product).filter(models.Product.id==id)
     if not product.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'product with id {id} is not available')
@@ -36,7 +36,7 @@ def destroy(id,db:Session=Depends(get_db),token: dict = Depends(verify_token)):
 
 #update
 @router.put('/{id}',status_code=status.HTTP_202_ACCEPTED)
-def update(id,request: schemas.Product,db:Session=Depends(get_db),token: dict = Depends(verify_token)):
+def update(id,request: schemas.Product,db:Session=Depends(get_db)):
     product=db.query(models.Product).filter(models.Product.id==id)
     if not product.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'product with id {id} is not available')
@@ -46,7 +46,7 @@ def update(id,request: schemas.Product,db:Session=Depends(get_db),token: dict = 
     return 'updated'
 
 @router.get('/{id}',status_code=200,response_model=schemas.ShowProduct)
-def show(id,db:Session =Depends(get_db),token: dict = Depends(verify_token)):
+def show(id,db:Session =Depends(get_db)):
     product=db.query(models.Product).filter(models.Product.id==id).first()
     #responce is used for exception handling
     if not product:
