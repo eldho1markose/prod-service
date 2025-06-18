@@ -1,14 +1,21 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException,Security,status
+from fastapi.security import HTTPBearer,HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login") 
+# Load environment variables
+load_dotenv()
 
-SECRET_KEY = "SecRet"
-ALGORITHM = "HS256"
+# Get values from .env
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 
-def verify_token(token: str = Depends(oauth2_scheme)):
+auth=HTTPBearer()
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Security(auth)):
+    token=credentials.credentials
     try:
         print("Verifying token...")
         print(f"Token: {token}")
