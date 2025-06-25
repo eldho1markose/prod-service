@@ -15,7 +15,7 @@ services:
       - "5432:5432"
 
   product-service:
-    image: product-service:latest 
+    build: .
     depends_on:
       - db
     ports:
@@ -23,8 +23,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://user:pass@db:5432/product_service_db
     command: >
-      sh -c "uvicorn main:app --host 0.0.0.0 --port 8000"
-
+      sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
 volumes:
   product_data:
